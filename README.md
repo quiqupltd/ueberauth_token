@@ -20,46 +20,53 @@ constructed.
 - Definition of a provider module which implements the following callbacks
 
 
-    @callback get_payload(token :: String.t(), opts :: list()) :: {:ok, map()} | {:error, map()}
-    @callback valid_token?(token :: String.t(), opts :: list) :: boolean()
-    @callback get_uid(conn :: Conn.t()) :: any()
-    @callback get_credentials(conn :: Conn.t()) :: Credentials.t()
-    @callback get_info(conn :: Conn.t()) :: Info.t()
-    @callback get_extra(conn :: Conn.t()) :: Extra.t()
-    @callback get_ttl(conn :: Conn.t()) :: integer()
+```elixir
+@callback get_payload(token :: String.t(), opts :: list()) :: {:ok, map()} | {:error, map()}
+@callback valid_token?(token :: String.t(), opts :: list) :: boolean()
+@callback get_uid(conn :: Conn.t()) :: any()
+@callback get_credentials(conn :: Conn.t()) :: Credentials.t()
+@callback get_info(conn :: Conn.t()) :: Info.t()
+@callback get_extra(conn :: Conn.t()) :: Extra.t()
+@callback get_ttl(conn :: Conn.t()) :: integer()
+```
 
 ## Basic Usage
 
 
 #### 1. By adding a plug in a plug pipeline
 
-
-    pipeline :api do
-      plug :accepts, ["json"]
-      plug UeberauthToken.Plug, provider: UeberauthToken.TestProvider
-    end
+```elixir
+pipeline :api do
+  plug :accepts, ["json"]
+  plug UeberauthToken.Plug, provider: UeberauthToken.TestProvider
+end
+```
 
 The output from the pipeline should be in one of the two forms as follows:
 
-    # Failed validation
-    Plug.Conn{assigns: %{ueberauth_failure: %Ueberauth.Failure{}}}
-    
-    # Successful validation
-    Plug.Conn{assigns: %{ueberauth_auth: %Ueberauth.Auth{}}}
+```elixir
+# Failed validation
+Plug.Conn{assigns: %{ueberauth_failure: %Ueberauth.Failure{}}}
+
+# Successful validation
+Plug.Conn{assigns: %{ueberauth_auth: %Ueberauth.Auth{}}}
+```
 
 #### 2. By calling `UeberauthToken.token_auth/3`
 
-
-    UeberauthToken.token_auth("a2b62c2a-74de-417a-9038-deaf6a98c6c0", UeberauthToken.TestProvider, [])
+```elixir
+UeberauthToken.token_auth("a2b62c2a-74de-417a-9038-deaf6a98c6c0", UeberauthToken.TestProvider, [])
+```
 
 The output from the pipeline should be in one of the two forms as follows:
 
-      # Failed validation
-      %Ueberauth.Failure{}
+```elixir
+# Failed validation
+%Ueberauth.Failure{}
 
-      # Successful validation
-      %Ueberauth.Auth{}
-
+# Successful validation
+%Ueberauth.Auth{}
+```
 ## Installation
 
 
@@ -68,11 +75,13 @@ The output from the pipeline should be in one of the two forms as follows:
 The [ueberauth_token package](https://hex.pm/ueberauth_token) can be installed
 by adding `ueberauth_token` to your list of dependencies in `mix.exs`:
 
-    def deps do
-      [
-        {:ueberauth_token, "~> 0.1.0"}
-      ]
-    end
+```elixir
+def deps do
+  [
+    {:ueberauth_token, "~> 0.1.0"}
+  ]
+end
+```
 
 #### Define an adapter module
 
@@ -82,22 +91,25 @@ See `UeberauthToken.TestProvider` as an example approach to writing an adapter.
 #### Add the configuration to `config/config.exs`
 
 
-    config :ueberauth_token, UeberauthToken.Config,
-      providers: [UeberauthToken.TestProvider]
-    
-    config :ueberauth_token, SomeProvider,
-      use_cache: false,
-      cache_name: :ueberauth_token_some_provider,
-      background_checks: false,
-      background_frequency: 600,
-      background_worker_log_level: :warn
+```elixir
+config :ueberauth_token, UeberauthToken.Config,
+  providers: [UeberauthToken.TestProvider]
+
+config :ueberauth_token, SomeProvider,
+  use_cache: false,
+  cache_name: :ueberauth_token_some_provider,
+  background_checks: false,
+  background_frequency: 600,
+  background_worker_log_level: :warn
+```
     
 *Note:* The configuration also supports [confex](https://hex.pm/packages/confex) style configurations.
 
 ## Tests
 
-
-    MIX_ENV=test mix test
+```elixir
+MIX_ENV=test mix test
+```
     
 ## Authors
 
