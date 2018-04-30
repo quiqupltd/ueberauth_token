@@ -93,7 +93,7 @@ See `UeberauthToken.TestProvider` as an example approach to writing an adapter.
 
 ```elixir
 config :ueberauth_token, UeberauthToken.Config,
-  providers: [UeberauthToken.TestProvider]
+  providers: [SomeProvider]
 
 config :ueberauth_token, SomeProvider,
   use_cache: false,
@@ -119,7 +119,7 @@ MIX_ENV=test mix test
 ## License
 
 
-Copyright (c) 2018 Quiqup LTD, MIT License.
+MIT License.
 See [LICENSE.md](https://github.com/QuiqUpLTD/ueberauth_token/blob/master/LICENSE.md) for further details.
 
 [hexdocs]: https://hexdocs.pm/ueberauth_token/0.1.0/UeberauthToken.html
