@@ -1,0 +1,14 @@
+{
+  "user_id": "1",
+  "name": "John Doe",
+  "first_name": "John",
+  "last_name": "Doe",
+  "username": "john_d",
+  "email": "johndoe@quiqup.com",
+  "location": "London",
+  "description": null,
+  "phone": null,
+  "urls": {
+    "homepage": "https://www.quiqup.com/"
+  }
+}

@@ -1,0 +1,16 @@
+image: elixir:1.6.4
+
+before_script:
+  - mix local.hex --force
+  - mix local.rebar --force
+  - MIX_ENV=test mix do deps.get, compile
+  - MIX_ENV=test mix do credo --strict, format --check-formatted
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - echo "This pipeline will be removed later in favour of .travis.yml"
+    - mix test

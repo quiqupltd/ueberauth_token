@@ -1,0 +1,13 @@
+{
+  "token": "5a236016-07f0-4689-bf74-d7b8559b21d7",
+  "refresh_token": null,
+  "token_type": "Bearer",
+  "secret": null,
+  "expires": true,
+  "expires_at": 1524838670,
+  "scopes": [
+    "read",
+    "write"
+  ],
+  "other_token_info": {}
+}
