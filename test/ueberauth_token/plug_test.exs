@@ -1,5 +1,5 @@
 defmodule UeberauthToken.PlugTest do
-  use UeberauthToken.TestCase, async: true
+  use UeberauthToken.TestCase
 
   # Tests to follow
 end

@@ -1,5 +1,5 @@
 defmodule UeberauthToken.StrategyTest do
-  use UeberauthToken.TestCase, async: true
+  use UeberauthToken.TestCase
 
   describe "When a provider has not been set in %Conn{private: %{ueberauth_token: _}}" do
     setup [:ensure_cache_deactivated]
