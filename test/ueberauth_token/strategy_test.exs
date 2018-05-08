@@ -42,7 +42,8 @@ defmodule UeberauthToken.StrategyTest do
 
       assert :erlang.hd(conn_after.assigns.ueberauth_failure.errors).message ==
                """
-               Token validation failed for a token against the ueberauth_token_test_provider provider\n. Authorization request header missing
+               Token validation failed for a token against the ueberauth_token_test_provider provider\n. \
+               The authorization request header is missing
                """
                |> String.trim_trailing("\n")
     end
@@ -76,7 +77,8 @@ defmodule UeberauthToken.StrategyTest do
          in the format %Conn{private: %{ueberauth_token: payload}}
          """,
          %{conn: conn, token: token} do
-      expect_passing()
+      expect_passing_token_info(2)
+      expect_passing_user_info(2)
 
       conn_after = Strategy.handle_callback!(conn)
       {:ok, expected_payload} = TestProvider.get_payload(token)
@@ -99,7 +101,7 @@ defmodule UeberauthToken.StrategyTest do
   """ do
     setup [
       :ensure_cache_deactivated,
-      :setup_request_headers,
+      :setup_valid_token,
       :setup_provider,
       :set_mox_from_context,
       :verify_on_exit!
@@ -116,7 +118,8 @@ defmodule UeberauthToken.StrategyTest do
          in the format %Conn{private: %{ueberauth_token: payload}}
          """,
          %{conn: conn, token: token} do
-      expect_passing()
+      expect_passing_token_info(2)
+      expect_passing_user_info(2)
 
       conn_after = Strategy.handle_callback!(conn)
       {:ok, expected_payload} = TestProvider.get_payload(token)

@@ -50,6 +50,7 @@ defmodule UeberauthToken.Config do
       a required provider module which implements the callbacks defined in `UeberauthToken.Strategy`.
       See `UeberauthToken.Strategy`
   """
+  alias Confex.Resolver
 
   @background_checking_by_default? false
   @use_cache_by_default? false
@@ -64,7 +65,7 @@ defmodule UeberauthToken.Config do
   def providers do
     case Application.get_env(:ueberauth_token, __MODULE__)[:providers] do
       {:system, :list, _, _} = config ->
-        Confex.Resolver.resolve!(config)
+        Resolver.resolve!(config)
 
       config ->
         config

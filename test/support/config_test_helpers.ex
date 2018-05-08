@@ -6,8 +6,6 @@ defmodule UeberauthToken.ConfigTestHelpers do
   alias Mix.Project
   alias Mix.Config, as: MixConfig
 
-  def generate_token, do: "a2b62c2a-74de-417a-9038-deaf6a98c6c0"
-
   def ensure_deactivated_cache do
     Application.put_env(:ueberauth_token, test_provider(), test_provider_config())
     start_application()

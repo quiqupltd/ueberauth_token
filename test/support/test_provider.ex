@@ -75,21 +75,23 @@ defmodule UeberauthToken.TestProvider do
   end
 
   @spec get_uid(conn :: Conn.t()) :: any()
-  def get_uid(%{private: %{ueberauth_token: %Payload{user_id: id}}}) do
+  def get_uid(%{private: %{ueberauth_token: %{payload: %Payload{user_id: id}}}}) do
     id
   end
 
   @spec get_credentials(conn :: Conn.t()) :: Credentials.t()
   def get_credentials(%{
         private: %{
-          ueberauth_token: %Payload{
-            token: access_token,
-            refresh_token: refresh_token,
-            token_type: token_type,
-            secret: secret,
-            expires_in: expires_in,
-            scopes: scopes,
-            other_token_info: other_token_info
+          ueberauth_token: %{
+            payload: %Payload{
+              token: access_token,
+              refresh_token: refresh_token,
+              token_type: token_type,
+              secret: secret,
+              expires_in: expires_in,
+              scopes: scopes,
+              other_token_info: other_token_info
+            }
           }
         }
       })
@@ -120,17 +122,19 @@ defmodule UeberauthToken.TestProvider do
   @spec get_info(conn :: Conn.t()) :: Info.t()
   def get_info(%{
         private: %{
-          ueberauth_token: %Payload{
-            name: name,
-            first_name: first_name,
-            last_name: last_name,
-            username: nickname,
-            email: email,
-            location: location,
-            description: description,
-            avatar: image,
-            phone: phone,
-            urls: urls
+          ueberauth_token: %{
+            payload: %Payload{
+              name: name,
+              first_name: first_name,
+              last_name: last_name,
+              username: nickname,
+              email: email,
+              location: location,
+              description: description,
+              avatar: image,
+              phone: phone,
+              urls: urls
+            }
           }
         }
       }) do
@@ -149,7 +153,7 @@ defmodule UeberauthToken.TestProvider do
   end
 
   @spec get_extra(conn :: Conn.t()) :: Extra.t()
-  def get_extra(%{private: %{ueberauth_token: %Payload{} = payload}}) do
+  def get_extra(%{private: %{ueberauth_token: %{payload: %Payload{} = payload}}}) do
     %Extra{
       raw_info: payload
     }
@@ -161,7 +165,7 @@ defmodule UeberauthToken.TestProvider do
   end
 
   @callback get_token_info(token :: String.t()) ::
-              {:ok, map()} | {:ok, %{key: String.t(), message: String.t()}}
+              {:ok, map()} | {:error, %{key: String.t(), message: String.t()}}
   def get_token_info(_token) do
     {:ok,
      @default_token_payload
@@ -170,7 +174,7 @@ defmodule UeberauthToken.TestProvider do
   end
 
   @callback get_user_info(token :: String.t()) ::
-              {:ok, map()} | {:ok, %{key: String.t(), message: String.t()}}
+              {:ok, map()} | {:error, %{key: String.t(), message: String.t()}}
   def get_user_info(_token) do
     {:ok,
      @default_user_payload
