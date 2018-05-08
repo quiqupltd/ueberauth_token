@@ -62,7 +62,13 @@ defmodule UeberauthToken.Config do
   """
   @spec providers() :: Keyword.t()
   def providers do
-    Application.get_env(:ueberauth_token, __MODULE__)[:providers]
+    case Application.get_env(:ueberauth_token, __MODULE__)[:providers] do
+      {:system, :list, _, _} = config ->
+        Confex.Resolver.resolve!(config)
+
+      config ->
+        config
+    end
   end
 
   @doc """
