@@ -27,8 +27,8 @@ defmodule UeberauthToken.SetupTestHelpers do
 
     %{
       context
-      | conn: %{conn | req_headers: %{"authorization" => "Bearer #{token}"}},
-        token: token
+    | conn: %{conn | req_headers: %{"authorization" => "Bearer #{token}"}},
+      token: token
     }
   end
 
@@ -37,11 +37,11 @@ defmodule UeberauthToken.SetupTestHelpers do
 
     %{
       context
-      | conn:
-          Conn.put_private(conn, :ueberauth_token, %{
-            token: %{"authorization" => "Bearer #{token}"}
-          }),
-        token: token
+    | conn:
+      Conn.put_private(conn, :ueberauth_token, %{
+        token: %{"authorization" => "Bearer #{token}"}
+      }),
+      token: token
     }
   end
 
@@ -50,38 +50,38 @@ defmodule UeberauthToken.SetupTestHelpers do
       ) do
     new_private = %{
       private
-      | ueberauth_token: Map.put(ueberauth_token, :provider, ConfigTestHelpers.test_provider())
+    | ueberauth_token: Map.put(ueberauth_token, :provider, ConfigTestHelpers.test_provider())
     }
 
     %{
       context
-      | conn: Map.put(conn, :private, new_private)
+    | conn: Map.put(conn, :private, new_private)
     }
   end
 
   def setup_provider(%{conn: %{private: _} = conn} = context) do
     %{
       context
-      | conn:
-          Map.put(conn, :private, %{
-            ueberauth_token: %{provider: ConfigTestHelpers.test_provider()}
-          })
+    | conn:
+      Map.put(conn, :private, %{
+        ueberauth_token: %{provider: ConfigTestHelpers.test_provider()}
+      })
     }
   end
 
   def expect_passing do
     expect(TestProviderMock, :get_token_info, 2, fn _token ->
       {:ok,
-       @passing_token_payload
-       |> File.read!()
-       |> Jason.decode!()}
+        @passing_token_payload
+        |> File.read!()
+        |> Jason.decode!()}
     end)
 
     expect(TestProviderMock, :get_user_info, 2, fn _token ->
       {:ok,
-       @passing_user_payload
-       |> File.read!()
-       |> Jason.decode!()}
+        @passing_user_payload
+        |> File.read!()
+        |> Jason.decode!()}
     end)
   end
 end
