@@ -59,6 +59,7 @@ defmodule UeberauthToken.Strategy do
   alias Ueberauth.Strategy.Helpers
   alias Ueberauth.Auth
   alias UeberauthToken.Config
+  alias Plug.Conn.TokenParsingError
   alias Plug.Conn
 
   @behaviour Ueberauth.Strategy
@@ -102,9 +103,7 @@ defmodule UeberauthToken.Strategy do
         rework_error_struct(Helpers.set_errors!(conn, [error]), provider)
 
       raw_token ->
-        conn
-        |> Map.put(:private, %{ueberauth_token: %{provider: provider}})
-        |> do_handle_callback(raw_token)
+        do_handle_callback(conn, raw_token)
     end
   end
 
@@ -122,15 +121,13 @@ defmodule UeberauthToken.Strategy do
 
     case Map.has_key?(req_headers, "authorization") do
       true ->
-        conn
-        |> Map.put(:private, %{ueberauth_token: %{provider: provider}})
-        |> do_handle_callback(req_headers["authorization"])
+        do_handle_callback(conn, req_headers["authorization"])
 
       false ->
         error =
           Helpers.error(
             "token",
-            "#{validation_error_msg(provider)}. Authorization request header missing"
+            "#{validation_error_msg(provider)}. The authorization request header is missing"
           )
 
         rework_error_struct(Helpers.set_errors!(conn, [error]), provider)
@@ -140,38 +137,25 @@ defmodule UeberauthToken.Strategy do
   defp do_handle_callback(conn, bearer_token) when is_binary(bearer_token) do
     access_token = extract_token(bearer_token)
 
-    with %Conn{
-           private: %{
-             ueberauth_token: %{
-               payload: _payload
+    conn =
+      with %Conn{
+             private: %{
+               ueberauth_token: %{
+                 payload: _payload
+               }
              }
-           }
-         } = conn <- try_use_potentially_cached_data(conn, access_token) do
-      conn
-    else
-      %Conn{} = conn ->
-        get_payload_and_return_conn(conn, access_token)
+           } = conn <- try_use_potentially_cached_data(conn, access_token) do
+        conn
+      else
+        %Conn{} = conn ->
+          get_payload_and_return_conn(conn, access_token)
 
-      {:error, error} ->
-        error = Helpers.error(error.key, error.message)
-        rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
-    end
-  end
+        {:error, error} ->
+          error = Helpers.error(error.key, error.message)
+          rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
+      end
 
-  defp get_payload_and_return_conn(%Conn{assigns: %{ueberauth_failure: _}} = conn, _) do
     conn
-  end
-
-  defp get_payload_and_return_conn(%Conn{} = conn, access_token) do
-    case provider(conn).get_payload(access_token) do
-      {:ok, payload} ->
-        maybe_put_cached_data(conn, access_token, payload)
-        Conn.put_private(conn, :ueberauth_token, %{payload: payload})
-
-      {:error, error} ->
-        error = Helpers.error(error.key, error.message)
-        rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
-    end
   end
 
   @doc """
@@ -224,14 +208,36 @@ defmodule UeberauthToken.Strategy do
       test
     rescue
       exception ->
-        msg = """
-        Error while processing token #{access_token}, only a bearer token is acceptable.
-        As follows, for example, "Bearer #{access_token}"
+        reraise(
+          %TokenParsingError{
+            access_token: access_token,
+            original_exception: exception
+          },
+          System.stacktrace()
+        )
+    end
+  end
 
-        #{Exception.message(exception)}
-        """
+  defp get_payload_and_return_conn(%Conn{assigns: %{ueberauth_failure: _}} = conn, _) do
+    conn
+  end
 
-        reraise(RuntimeError.exception(msg), System.stacktrace())
+  defp get_payload_and_return_conn(
+         %Conn{
+           private: %{
+             ueberauth_token: ueberauth_token
+           }
+         } = conn,
+         access_token
+       ) do
+    case provider(conn).get_payload(access_token) do
+      {:ok, payload} ->
+        maybe_put_cached_data(conn, access_token, payload)
+        Conn.put_private(conn, :ueberauth_token, Map.put(ueberauth_token, :payload, payload))
+
+      {:error, error} ->
+        error = Helpers.error(error.key, error.message)
+        rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
     end
   end
 
@@ -255,13 +261,20 @@ defmodule UeberauthToken.Strategy do
     end
   end
 
-  defp try_use_potentially_cached_data(conn, access_token) do
+  defp try_use_potentially_cached_data(
+         %Conn{
+           private: %{
+             ueberauth_token: ueberauth_token
+           }
+         } = conn,
+         access_token
+       ) do
     with true <- Config.use_cache?(provider(conn)),
          {:ok, nil} <- Cachex.get(Config.cache_name(provider(conn)), access_token) do
       conn
     else
       {:ok, payload} ->
-        Conn.put_private(conn, :ueberauth_token, %{payload: payload})
+        Conn.put_private(conn, :ueberauth_token, %{ueberauth_token | payload: payload})
 
       false ->
         conn
@@ -311,7 +324,8 @@ defmodule UeberauthToken.Strategy do
   The payload is the map from which other callback functions will
   need to build the `:ueberauth` structs.
   """
-  @callback get_payload(token :: String.t(), opts :: list()) :: {:ok, map()} | {:error, map()}
+  @callback get_payload(token :: String.t(), opts :: list()) ::
+              {:ok, map()} | {:error, %{key: String.t(), message: String.t()}}
 
   @doc """
   Verifies a token.
@@ -326,7 +340,7 @@ defmodule UeberauthToken.Strategy do
 
   Callback function to be implemented by the provider
   """
-  @callback get_uid(conn :: Conn.t()) :: any()
+  @callback get_uid(conn :: %Conn{private: %{ueberauth_token: %{payload: map()}}}) :: any()
 
   @doc """
   To populate the ueberauth credentials struct from the payload in
@@ -334,7 +348,8 @@ defmodule UeberauthToken.Strategy do
 
   Callback function to be implemented by the provider
   """
-  @callback get_credentials(conn :: Conn.t()) :: Credentials.t()
+  @callback get_credentials(conn :: %Conn{private: %{ueberauth_token: %{payload: map()}}}) ::
+              Credentials.t()
 
   @doc """
   To populate the ueberauth info struct from the payload in
@@ -342,7 +357,7 @@ defmodule UeberauthToken.Strategy do
 
   Callback function to be implemented by the provider
   """
-  @callback get_info(conn :: Conn.t()) :: Info.t()
+  @callback get_info(conn :: %Conn{private: %{ueberauth_token: %{payload: map()}}}) :: Info.t()
 
   @doc """
   To populate the ueberauth extra struct from the payload in
@@ -350,7 +365,7 @@ defmodule UeberauthToken.Strategy do
 
   Callback function to be implemented by the provider
   """
-  @callback get_extra(conn :: Conn.t()) :: Extra.t()
+  @callback get_extra(conn :: %Conn{private: %{ueberauth_token: %{payload: map()}}}) :: Extra.t()
 
   @doc """
   To get the ttl from the ueberauth struct. The ttl
