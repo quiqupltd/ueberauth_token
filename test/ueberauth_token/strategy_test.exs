@@ -26,6 +26,8 @@ defmodule UeberauthToken.StrategyTest do
   describe "When the request headers lack an authorization token" do
     setup [:ensure_cache_deactivated, :setup_provider]
 
+    @describetag :provider
+
     test "the handle_request!/1 function returns %Conn{} unchanged", %{conn: conn} do
       assert Strategy.handle_request!(conn) == conn
     end
@@ -67,6 +69,7 @@ defmodule UeberauthToken.StrategyTest do
     ]
 
     @describetag :token
+    @describetag :provider
 
     test "the handle_request!/1 function returns %Conn{} unchanged", %{conn: conn} do
       assert Strategy.handle_request!(conn) == conn
@@ -108,6 +111,7 @@ defmodule UeberauthToken.StrategyTest do
     ]
 
     @describetag :token
+    @describetag :provider
 
     test "the handle_request!/1 function returns %Conn{} unchanged", %{conn: conn} do
       assert Strategy.handle_request!(conn) == conn

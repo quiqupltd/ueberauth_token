@@ -83,4 +83,45 @@ defmodule UeberauthToken.Fixtures do
       strategy: UeberauthToken.Strategy
     }
   end
+
+  def failing(:empty_token) do
+    %Ueberauth.Failure{
+      errors: [
+        %Ueberauth.Failure.Error{
+          message: "Empty string or null found for token",
+          message_key: "error"
+        }
+      ],
+      provider: UeberauthToken.TestProvider,
+      strategy: UeberauthToken.Strategy
+    }
+  end
+
+  def failing(:invalid_provider, :validate_provider) do
+    %Ueberauth.Failure{
+      errors: [
+        %Ueberauth.Failure.Error{
+          message:
+            "Invalid provider - Elixir.InvalidProvider, ensure the provider ins configured",
+          message_key: "error"
+        }
+      ],
+      provider: InvalidProvider,
+      strategy: UeberauthToken.Strategy
+    }
+  end
+
+  def failing(:invalid_provider, :do_not_validate_provider) do
+    %Ueberauth.Failure{
+      errors: [
+        %Ueberauth.Failure.Error{
+          message:
+            "Failed attempt to verify token due to error: %FunctionClauseError{args: nil, arity: 3, clauses: nil, function: :get, kind: nil, module: Keyword}",
+          message_key: "error"
+        }
+      ],
+      provider: InvalidProvider,
+      strategy: UeberauthToken.Strategy
+    }
+  end
 end
