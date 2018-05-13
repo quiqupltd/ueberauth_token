@@ -12,6 +12,16 @@ defmodule UeberauthToken.SetupTestHelpers do
     context
   end
 
+  def ensure_cache_activated(context) do
+    ConfigTestHelpers.ensure_activated_cache()
+    context
+  end
+
+  def ensure_cache_and_background_worker_activated(context) do
+    ConfigTestHelpers.ensure_activated_cache_and_background_worker()
+    context
+  end
+
   def setup_request_headers(%{conn: conn} = context) do
     token = ConfigTestHelpers.generate_token()
 

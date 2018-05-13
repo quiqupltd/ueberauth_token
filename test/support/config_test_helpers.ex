@@ -14,7 +14,17 @@ defmodule UeberauthToken.ConfigTestHelpers do
   end
 
   def ensure_activated_cache do
-    new_config = Map.put(test_provider_config(), :use_cache, true)
+    new_config = Keyword.put(test_provider_config(), :use_cache, true)
+    Application.put_env(:ueberauth_token, test_provider(), new_config)
+    start_application()
+  end
+
+  def ensure_activated_cache_and_background_worker do
+    new_config =
+      test_provider_config()
+      |> Keyword.put(:use_cache, true)
+      |> Keyword.put(:background_checks, true)
+
     Application.put_env(:ueberauth_token, test_provider(), new_config)
     start_application()
   end
