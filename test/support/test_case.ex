@@ -10,6 +10,7 @@ defmodule UeberauthToken.TestCase do
       alias UeberauthToken.{Config, Strategy, TestProvider, TestProviderMock, ConfigTestHelpers}
       alias Ueberauth.{Auth, Failure}
       import UeberauthToken.ConfigTestHelpers, only: [test_provider: 0]
+      import UeberauthToken.ExpectationTestHelpers
       import UeberauthToken.SetupTestHelpers
       import Mox
     end
