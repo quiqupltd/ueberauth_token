@@ -14,8 +14,8 @@ defmodule UeberauthToken.PlugTest do
     @describetag :token
 
     test "the plug pipeline responds and is not halted", %{conn: conn} do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       conn = TestPlugRouter.call(conn, [])
 
@@ -23,8 +23,8 @@ defmodule UeberauthToken.PlugTest do
     end
 
     test "an authenticated plug pipeline returns a cleaned private field", %{conn: conn} do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       conn = TestPlugRouter.call(conn, [])
 
@@ -32,8 +32,8 @@ defmodule UeberauthToken.PlugTest do
     end
 
     test "an authenticated plug pipeline assigns an %Auth{} struct to the conn", %{conn: conn} do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       now_unix = DateTime.to_unix(DateTime.utc_now(), :second)
       conn = TestPlugRouter.call(conn, [])
@@ -49,8 +49,8 @@ defmodule UeberauthToken.PlugTest do
       conn: conn,
       token: expected_token
     } do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       conn = TestPlugRouter.call(conn, [])
 
@@ -96,7 +96,7 @@ defmodule UeberauthToken.PlugTest do
     @describetag :token
 
     test "the plug pipeline responds and is not halted", %{conn: conn} do
-      expect_passing_user_info(1)
+      expect_passing_user_info()
       expect_failing_token_info(1)
 
       conn = TestPlugRouter.call(conn, [])
@@ -105,7 +105,7 @@ defmodule UeberauthToken.PlugTest do
     end
 
     test "an unauthenticated plug pipeline returns a cleaned private field", %{conn: conn} do
-      expect_passing_user_info(1)
+      expect_passing_user_info()
       expect_failing_token_info(1)
 
       conn = TestPlugRouter.call(conn, [])
@@ -116,7 +116,7 @@ defmodule UeberauthToken.PlugTest do
     test "an unauthenticated plug pipeline assigns an %Failure{} struct to the conn", %{
       conn: conn
     } do
-      expect_passing_user_info(1)
+      expect_passing_user_info()
       expect_failing_token_info(1)
 
       conn = TestPlugRouter.call(conn, [])

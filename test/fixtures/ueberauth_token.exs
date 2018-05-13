@@ -124,4 +124,30 @@ defmodule UeberauthToken.Fixtures do
       strategy: UeberauthToken.Strategy
     }
   end
+
+  def payload do
+    %UeberauthToken.TestProvider.Payload{
+      avatar: nil,
+      description: nil,
+      email: "johndoe@quiqup.com",
+      expires_in: 10,
+      first_name: "John",
+      last_name: "Doe",
+      location: "London",
+      name: "John Doe",
+      other_token_info: %{},
+      phone: nil,
+      provider: UeberauthToken.TestProvider,
+      refresh_token: nil,
+      scopes: ["read", "write"],
+      secret: nil,
+      token: "5a236016-07f0-4689-bf74-d7b8559b21d7",
+      token_type: "Bearer",
+      urls: %{
+        "homepage" => "https://www.quiqup.com/"
+      },
+      user_id: 1,
+      username: "john_d"
+    }
+  end
 end

@@ -3,17 +3,18 @@ defmodule UeberauthToken.ConfigTestHelpers do
   alias UeberauthToken.Config
   alias Confex.Resolver
   alias ExUnit.Callbacks
-  alias Mix.Project
   alias Mix.Config, as: MixConfig
 
+  @apps [:cachex, :ueberauth_token]
+
   def ensure_deactivated_cache do
-    Application.put_env(:ueberauth_token, test_provider(), test_provider_config())
+    MixConfig.persist(ueberauth_token: [{test_provider(), test_provider_config()}])
     start_application()
   end
 
   def ensure_activated_cache do
     new_config = Keyword.put(test_provider_config(), :use_cache, true)
-    Application.put_env(:ueberauth_token, test_provider(), new_config)
+    MixConfig.persist(ueberauth_token: [{test_provider(), new_config}])
     start_application()
   end
 
@@ -23,32 +24,29 @@ defmodule UeberauthToken.ConfigTestHelpers do
       |> Keyword.put(:use_cache, true)
       |> Keyword.put(:background_checks, true)
 
-    Application.put_env(:ueberauth_token, test_provider(), new_config)
+    MixConfig.persist(ueberauth_token: [{test_provider(), new_config}])
+
     start_application()
   end
 
   def reset_application_on_exit do
     Callbacks.on_exit(fn ->
+      MixConfig.persist(ueberauth_token: [{test_provider(), test_provider_config()}])
+      MixConfig.persist(ueberauth_token: [{Config, default_ueberauth_token_providers()}])
       stop_application()
-      Application.put_env(:ueberauth_token, Config, test_providers_config())
-      Application.put_env(:ueberauth_token, test_provider(), test_provider_config())
     end)
   end
 
   def stop_application do
-    Application.stop(:ueberauth_token)
+    for app <- @apps do
+      Application.stop(app)
+    end
   end
 
   def start_application do
-    start_dependency_applications()
-    Application.ensure_started(:ueberauth_token, :temporary)
-  end
-
-  def start_dependency_applications do
-    Project.config()
-    |> Keyword.get(:deps)
-    |> Enum.map(&Kernel.elem(&1, 0))
-    |> Enum.map(&Application.ensure_all_started(&1, :temporary))
+    for app <- @apps do
+      Application.ensure_all_started(app)
+    end
   end
 
   def test_provider, do: default_ueberauth_token_provider()

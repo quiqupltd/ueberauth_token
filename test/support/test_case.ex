@@ -7,7 +7,16 @@ defmodule UeberauthToken.TestCase do
   using do
     quote do
       alias Plug.Conn
-      alias UeberauthToken.{Config, Strategy, TestProvider, TestProviderMock, ConfigTestHelpers}
+
+      alias UeberauthToken.{
+        Config,
+        Fixtures,
+        Strategy,
+        TestProvider,
+        TestProviderMock,
+        ConfigTestHelpers
+      }
+
       alias Ueberauth.{Auth, Failure}
       import UeberauthToken.ConfigTestHelpers, only: [test_provider: 0]
       import UeberauthToken.ExpectationTestHelpers
@@ -17,7 +26,7 @@ defmodule UeberauthToken.TestCase do
   end
 
   setup_all do
-    :ok
+    {:ok, %{}}
   end
 
   setup do
