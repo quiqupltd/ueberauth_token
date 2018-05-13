@@ -45,7 +45,7 @@ defmodule UeberauthToken do
 
       @provider UeberauthToken.TestProvider
 
-      def connect(%{"Authorization" => token} = params, socket) do
+      def connect(%{"authorization" => token} = params, socket) do
 
         case UeberauthToken.token_auth(token, @provider) do
           {:ok, %Ueberauth.Auth{} = auth} ->
