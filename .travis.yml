@@ -5,14 +5,12 @@ env:
   global:
     - MIX_ENV=test
 
-matrix:
-  include:
-    - otp_release: 20.2
-      elixir: 1.6.4
-
 jobs:
   include:
+
     - stage: test
+      otp_release: 20.2
+      elixir: 1.6.4
       script:
         # Run the tests
         - mix compile
