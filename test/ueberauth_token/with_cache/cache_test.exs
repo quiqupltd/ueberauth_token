@@ -44,4 +44,46 @@ defmodule UeberauthToken.WithCache.CacheTest do
       assert ttl > 0 and ttl < 10_000
     end
   end
+
+  describe """
+    When the cache is activated
+  """ do
+    setup [
+      :ensure_cache_activated,
+      :setup_provider,
+      :set_mox_from_context,
+      :verify_on_exit!
+    ]
+
+    @describetag :provider
+
+    test "A passing token is cached", %{provider: provider} do
+      expect_passing_token_info()
+      expect_passing_user_info()
+
+      {:ok, %Auth{credentials: %Credentials{token: token}}} =
+        UeberauthToken.token_auth(passing_token(), provider)
+
+      cache_keys =
+        provider
+        |> Config.cache_name()
+        |> Cachex.keys!()
+
+      assert token in cache_keys
+    end
+
+    test "A failing token is not cached", %{provider: provider} do
+      expect_failing_token_info()
+      expect_passing_user_info()
+
+      {:error, %Failure{}} = UeberauthToken.token_auth(failing_token(), provider)
+
+      cache_keys =
+        provider
+        |> Config.cache_name()
+        |> Cachex.keys!()
+
+      assert cache_keys == []
+    end
+  end
 end
