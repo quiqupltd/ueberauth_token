@@ -18,6 +18,7 @@ defmodule UeberauthToken.TestCase do
       }
 
       alias Ueberauth.{Auth, Failure}
+      alias Ueberauth.Auth.Credentials
       import UeberauthToken.ConfigTestHelpers, only: [test_provider: 0]
       import UeberauthToken.ExpectationTestHelpers
       import UeberauthToken.SetupTestHelpers
