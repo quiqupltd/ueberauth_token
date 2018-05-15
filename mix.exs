@@ -61,7 +61,8 @@ defmodule UeberauthToken.MixProject do
 
   defp aliases do
     [
-      prepare: ["deps.get", "clean", "format", "compile", "credo --strict"]
+      prepare: ["deps.get", "clean", "format", "compile", "credo --strict"],
+      test: ["test --no-start"]
     ]
   end
 

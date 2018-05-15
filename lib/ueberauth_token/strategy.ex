@@ -274,7 +274,7 @@ defmodule UeberauthToken.Strategy do
       conn
     else
       {:ok, payload} ->
-        Conn.put_private(conn, :ueberauth_token, %{ueberauth_token | payload: payload})
+        Conn.put_private(conn, :ueberauth_token, Map.put(ueberauth_token, :payload, payload))
 
       false ->
         conn

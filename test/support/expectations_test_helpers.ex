@@ -7,7 +7,7 @@ defmodule UeberauthToken.ExpectationTestHelpers do
   @passing_token_payload "test/fixtures/passing/token_payload.json"
   @failing_user_payload "test/fixtures/failing/user_payload.json"
   @failing_token_payload "test/fixtures/failing/token_payload.json"
-  @passing_auth_module_path "test/fixtures/ueberauth.exs"
+  @passing_auth_module_path "test/fixtures/ueberauth_token.exs"
   @passing_token_string "5a236016-07f0-4689-bf74-d7b8559b21d7"
   @failing_token_string "5a236016-07f0-4689-bf74-d7b8559b21d8"
   @expires_in 10

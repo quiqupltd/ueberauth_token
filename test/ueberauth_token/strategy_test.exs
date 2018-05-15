@@ -79,12 +79,12 @@ defmodule UeberauthToken.StrategyTest do
          the handle_callback!/1 function returns a conn with a private payload
          in the format %Conn{private: %{ueberauth_token: payload}}
          """,
-         %{conn: conn, token: token} do
-      expect_passing_token_info(2)
-      expect_passing_user_info(2)
+         %{conn: conn} do
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       conn_after = Strategy.handle_callback!(conn)
-      {:ok, expected_payload} = TestProvider.get_payload(token)
+      expected_payload = Fixtures.payload()
 
       refute conn_after == conn
       assert Map.has_key?(conn_after.assigns, :ueberauth_failure) == false
@@ -121,12 +121,12 @@ defmodule UeberauthToken.StrategyTest do
          the handle_callback!/1 function returns a conn with a private payload
          in the format %Conn{private: %{ueberauth_token: payload}}
          """,
-         %{conn: conn, token: token} do
-      expect_passing_token_info(2)
-      expect_passing_user_info(2)
+         %{conn: conn} do
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       conn_after = Strategy.handle_callback!(conn)
-      {:ok, expected_payload} = TestProvider.get_payload(token)
+      expected_payload = Fixtures.payload()
 
       refute conn_after == conn
       assert Map.has_key?(conn_after.assigns, :ueberauth_failure) == false

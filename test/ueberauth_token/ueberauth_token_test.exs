@@ -20,8 +20,8 @@ defmodule UeberauthToken.UeberauthTokenTest do
       token: token,
       provider: provider
     } do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       now_unix = DateTime.to_unix(DateTime.utc_now(), :second)
       {:ok, %Auth{} = actual_ueberauth_struct} = UeberauthToken.token_auth(token, provider)
@@ -35,8 +35,8 @@ defmodule UeberauthToken.UeberauthTokenTest do
       token: token,
       provider: provider
     } do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       {:ok, %Auth{} = actual_ueberauth_struct} = UeberauthToken.token_auth(token, provider)
       actual_ueberauth_token = actual_ueberauth_struct.credentials.token
@@ -64,8 +64,8 @@ defmodule UeberauthToken.UeberauthTokenTest do
       token: token,
       provider: provider
     } do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       now_unix = DateTime.to_unix(DateTime.utc_now(), :second)
       opts = [validate_provider: false]
@@ -80,8 +80,8 @@ defmodule UeberauthToken.UeberauthTokenTest do
       token: token,
       provider: provider
     } do
-      expect_passing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_token_info()
+      expect_passing_user_info()
 
       opts = [validate_provider: false]
       {:ok, %Auth{} = actual_ueberauth_struct} = UeberauthToken.token_auth(token, provider, opts)
@@ -195,7 +195,7 @@ defmodule UeberauthToken.UeberauthTokenTest do
       provider: provider
     } do
       expect_failing_token_info(1)
-      expect_passing_user_info(1)
+      expect_passing_user_info()
 
       {:error, %Failure{} = actual_ueberauth_struct} = UeberauthToken.token_auth(token, provider)
 
