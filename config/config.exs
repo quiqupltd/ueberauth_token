@@ -1,6 +1,6 @@
 use Mix.Config
 
-if Mix.env() == :test do
+if Mix.env() == :test || Mix.env() == :dev do
   config :ueberauth_token, UeberauthToken.Config,
     providers: {:system, :list, "TEST_TOKEN_PROVIDER", [UeberauthToken.TestProvider]}
 
