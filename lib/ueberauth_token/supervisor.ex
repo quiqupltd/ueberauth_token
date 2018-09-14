@@ -3,6 +3,7 @@ defmodule UeberauthToken.Supervisor do
   use Supervisor
   alias UeberauthToken.Config
 
+  @spec start_link(any()) :: :ignore | {:error, any()} | {:ok, pid()}
   def start_link(args \\ []) do
     Confex.resolve_env!(:ueberauth_token)
     check_for_duplicate_cache_names!()
