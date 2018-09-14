@@ -118,8 +118,15 @@ defmodule UeberauthToken.Worker do
   end
 
   defp do_checks(provider) do
-    {:ok, tokens} = Cachex.keys(Config.cache_name(provider))
+    provider
+    |> Config.cache_name()
+    |> Cachex.keys()
+    |> do_checks_with_keys(provider)
+  end
 
+  defp do_checks_with_keys({:error, :no_cache}, _provider), do: nil
+
+  defp do_checks_with_keys({:ok, tokens}, provider) do
     steps =
       tokens
       |> Enum.count()
