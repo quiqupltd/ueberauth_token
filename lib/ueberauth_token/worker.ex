@@ -17,6 +17,7 @@ defmodule UeberauthToken.Worker do
 
   # public
 
+  @spec start_link(keyword()) :: :ignore | {:error, any()} | {:ok, pid()}
   def start_link(opts \\ []) do
     provider = Keyword.fetch!(opts, :provider)
 
@@ -25,11 +26,13 @@ defmodule UeberauthToken.Worker do
 
   # callbacks
 
+  @spec init(nil | keyword() | map()) :: {:ok, {nil, %{provider: any()}}}
   def init(opts) do
     periodic_checking(opts[:provider])
     {:ok, {nil, %{provider: opts[:provider]}}}
   end
 
+  @spec periodic_checking(atom() | binary()) :: :ok
   def periodic_checking(provider) do
     GenServer.cast(worker_name(provider), :periodic_checking)
   end
@@ -188,14 +191,17 @@ defmodule UeberauthToken.Worker do
 
   defp location(%Macro.Env{} = env) do
     """
-    module: #{env.module},
-    function: #{env.function},
-    line: #{env.line}
+    module: #{inspect(env.module)},
+    function: #{inspect(env.function)},
+    line: #{inspect(env.line)}
     """
   end
 
-  defp worker_details(provider) do
-    "worker #{worker_name(provider)} with process_id #{Process.whereis(worker_name(provider))}"
+  @spec worker_details(atom() | binary()) :: <<_::64, _::_*8>>
+  def worker_details(provider) do
+    "worker #{worker_name(provider)} with process_id #{
+      inspect(Process.whereis(worker_name(provider)))
+    }"
   end
 
   defp worker_name(provider) do
