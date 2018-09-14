@@ -75,7 +75,7 @@ by adding `ueberauth_token` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:ueberauth_token, "~> 0.1.0"}
+    {:ueberauth_token, "~> 0.1.1"}
   ]
 end
 ```
@@ -117,5 +117,3 @@ MIX_ENV=test mix test
 
 MIT License.
 See [LICENSE.md](https://github.com/QuiqUpLTD/ueberauth_token/blob/master/LICENSE.md) for further details.
-
-[hexdocs]: https://hexdocs.pm/ueberauth_token/0.1.0/UeberauthToken.html

@@ -1,6 +1,6 @@
 defmodule UeberauthToken.MixProject do
   use Mix.Project
-  @version "0.1.0"
+  @version "0.1.1"
   @elixir_versions ">= 1.6.0"
 
   def project do
