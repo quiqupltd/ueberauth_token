@@ -2,13 +2,11 @@
 
 ## Description
 
-
 UeberauthToken is a library which helps validate an oauth2 token received by the resource
 server. The token should be validated against the authorization server and an ueberauth struct
 constructed.
 
 ## Features
-
 
 - Helper function to validate the oauth2 token in a request to a resource server
 - Plug to validate the oauth2 token in a request to a resource server
@@ -18,7 +16,6 @@ constructed.
 ## Prerequisites
 
 - Definition of a provider module which implements the following callbacks
-
 
 ```elixir
 @callback get_payload(token :: String.t(), opts :: list()) :: {:ok, map()} | {:error, map()}
@@ -102,7 +99,7 @@ config :ueberauth_token, SomeProvider,
   background_frequency: 600,
   background_worker_log_level: :warn
 ```
-    
+
 *Note:* The configuration also supports [confex](https://hex.pm/packages/confex) style configurations.
 
 ## Tests
@@ -110,14 +107,13 @@ config :ueberauth_token, SomeProvider,
 ```elixir
 MIX_ENV=test mix test
 ```
-    
+
 ## Authors
 
-
 - Stephen Moloney (*[Stephen Moloney](https://github.com/stephenmoloney)*)
+- Ian Vaughan (*[Ian Vaughan](https://github.com/ianvaughan)*)
 
 ## License
-
 
 MIT License.
 See [LICENSE.md](https://github.com/QuiqUpLTD/ueberauth_token/blob/master/LICENSE.md) for further details.
