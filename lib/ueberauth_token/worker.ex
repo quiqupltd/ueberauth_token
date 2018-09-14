@@ -197,7 +197,7 @@ defmodule UeberauthToken.Worker do
     """
   end
 
-  @spec worker_details(atom() | binary()) :: <<_::64, _::_*8>>
+  @spec worker_details(atom() | binary()) :: String.t()
   def worker_details(provider) do
     "worker #{worker_name(provider)} with process_id #{
       inspect(Process.whereis(worker_name(provider)))
