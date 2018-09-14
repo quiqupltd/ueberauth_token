@@ -191,15 +191,17 @@ defmodule UeberauthToken.Worker do
 
   defp location(%Macro.Env{} = env) do
     """
-    module: #{env.module},
-    function: #{env.function},
-    line: #{env.line}
+    module: #{inspect(env.module)},
+    function: #{inspect(env.function)},
+    line: #{inspect(env.line)}
     """
   end
 
   @spec worker_details(atom() | binary()) :: <<_::64, _::_*8>>
-  defp worker_details(provider) do
-    "worker #{worker_name(provider)} with process_id #{Process.whereis(worker_name(provider))}"
+  def worker_details(provider) do
+    "worker #{worker_name(provider)} with process_id #{
+      inspect(Process.whereis(worker_name(provider)))
+    }"
   end
 
   defp worker_name(provider) do
