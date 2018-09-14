@@ -17,6 +17,7 @@ defmodule UeberauthToken.Worker do
 
   # public
 
+  @spec start_link(keyword()) :: :ignore | {:error, any()} | {:ok, pid()}
   def start_link(opts \\ []) do
     provider = Keyword.fetch!(opts, :provider)
 
@@ -25,11 +26,13 @@ defmodule UeberauthToken.Worker do
 
   # callbacks
 
+  @spec init(nil | keyword() | map()) :: {:ok, {nil, %{provider: any()}}}
   def init(opts) do
     periodic_checking(opts[:provider])
     {:ok, {nil, %{provider: opts[:provider]}}}
   end
 
+  @spec periodic_checking(atom() | binary()) :: :ok
   def periodic_checking(provider) do
     GenServer.cast(worker_name(provider), :periodic_checking)
   end
@@ -194,6 +197,7 @@ defmodule UeberauthToken.Worker do
     """
   end
 
+  @spec worker_details(atom() | binary()) :: <<_::64, _::_*8>>
   defp worker_details(provider) do
     "worker #{worker_name(provider)} with process_id #{Process.whereis(worker_name(provider))}"
   end
