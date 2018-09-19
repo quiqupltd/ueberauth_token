@@ -78,7 +78,7 @@ defmodule UeberauthToken.Worker do
     #{location(__ENV__)}
     """
 
-    :erlang.apply(Logger, Config.background_worker_log_level(provider), [msg])
+    :erlang.apply(Logger, :bare_log, [Config.background_worker_log_level(provider), msg])
 
     {:noreply, {timer, state}}
   end
@@ -89,7 +89,7 @@ defmodule UeberauthToken.Worker do
     #{location(__ENV__)}
     """
 
-    :erlang.apply(Logger, Config.background_worker_log_level(provider), [msg])
+    :erlang.apply(Logger, :bare_log, [Config.background_worker_log_level(provider), msg])
 
     :ok
   end
