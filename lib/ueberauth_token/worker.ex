@@ -10,7 +10,6 @@ defmodule UeberauthToken.Worker do
   See full description of the config options in `UeberauthToken.Config` @moduledoc.
   """
   use GenServer
-  require Logger
   alias UeberauthToken.{CheckSupervisor, Config, Strategy}
 
   @stagger_phases 30
