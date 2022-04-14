@@ -40,7 +40,7 @@ defmodule UeberauthToken.MixProject do
 
   defp deps do
     [
-      {:ueberauth, "~> 0.4.0"},
+      {:ueberauth, "~> 0.7.0"},
       {:confex, "~> 3.3"},
       {:cachex, "~> 3.0"},
 
