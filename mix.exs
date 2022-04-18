@@ -43,14 +43,14 @@ defmodule UeberauthToken.MixProject do
       {:ueberauth, "~> 0.7.0"},
       {:confex, "~> 3.3"},
       {:cachex, "~> 3.0"},
+      {:jason, "~> 1.2"},
 
       # dev/test
       {:excoveralls, "~> 0.8.0", only: [:test], runtime: false},
-      {:jason, "~> 1.0", only: [:test]},
       {:mapail, "~> 1.0", only: [:test]},
       {:mox, "~> 0.3.2", only: [:test]},
-      {:credo, "~> 0.9", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.18", only: [:dev, :test]}
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
     ]
   end
 
