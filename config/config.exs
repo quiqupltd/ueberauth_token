@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 if Mix.env() == :test || Mix.env() == :dev do
   config :ueberauth_token, UeberauthToken.Config,
