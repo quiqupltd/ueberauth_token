@@ -171,7 +171,7 @@ defmodule UeberauthToken.Strategy do
   end
 
   @doc false
-  def default_options, do: []
+  def default_options, do: [ignores_csrf_attack: true]
 
   @doc false
   def uid(%Conn{} = conn), do: provider(conn).get_uid(conn)
