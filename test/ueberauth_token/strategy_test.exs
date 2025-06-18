@@ -8,10 +8,7 @@ defmodule UeberauthToken.StrategyTest do
       assert Strategy.handle_request!(conn) == conn
     end
 
-    test """
-         the handle_callback!/1 function raises a FunctionClauseError
-         """,
-         %{conn: conn} do
+    test "the handle_callback!/1 function raises a FunctionClauseError", %{conn: conn} do
       assert_raise FunctionClauseError, fn ->
         Strategy.handle_callback!(conn)
       end
@@ -32,11 +29,7 @@ defmodule UeberauthToken.StrategyTest do
       assert Strategy.handle_request!(conn) == conn
     end
 
-    test """
-         the handle_callback!/1 function returns %Conn{assigns: assigns} with a
-         struct in the form %Ueberauth.Failure{errors: errors}
-         """,
-         %{conn: conn} do
+    test "the handle_callback!/1 function returns a failure struct", %{conn: conn} do
       conn_after = Strategy.handle_callback!(conn)
 
       refute conn_after == conn
@@ -56,10 +49,40 @@ defmodule UeberauthToken.StrategyTest do
     end
   end
 
-  describe """
-  When the request headers lack an authorization token but a private %Conn{} field
-  has a valid authorization token
-  """ do
+  describe "When the request headers have a malformed authorization token" do
+    setup [:ensure_cache_deactivated, :setup_provider]
+
+    @describetag :provider
+
+    test "handle_callback!/1 returns failure for Bearer token without space", %{conn: conn} do
+      conn = Plug.Conn.put_req_header(conn, "authorization", "Bearer")
+      conn_after = Strategy.handle_callback!(conn)
+
+      refute conn_after == conn
+      assert Map.has_key?(conn_after.assigns, :ueberauth_failure) == true
+
+      error_message = :erlang.hd(conn_after.assigns.ueberauth_failure.errors).message
+      assert String.contains?(error_message, "Invalid Bearer token format - missing space after 'Bearer'")
+    end
+
+    test "handle_callback!/1 returns failure for empty Bearer token", %{conn: conn} do
+      conn = Plug.Conn.put_req_header(conn, "authorization", "Bearer ")
+      conn_after = Strategy.handle_callback!(conn)
+
+      refute conn_after == conn
+      assert Map.has_key?(conn_after.assigns, :ueberauth_failure) == true
+
+      error_message = :erlang.hd(conn_after.assigns.ueberauth_failure.errors).message
+      assert String.contains?(error_message, "Bearer token is empty")
+    end
+
+    test "the cache is inactive" do
+      assert Config.use_cache?(test_provider()) == false
+      assert Config.cache_name(test_provider()) in :ets.all() == false
+    end
+  end
+
+  describe "When the request headers lack an authorization token but a private field has a valid token" do
     setup [
       :ensure_cache_deactivated,
       :setup_valid_private_ueberauth_token,
@@ -75,11 +98,7 @@ defmodule UeberauthToken.StrategyTest do
       assert Strategy.handle_request!(conn) == conn
     end
 
-    test """
-         the handle_callback!/1 function returns a conn with a private payload
-         in the format %Conn{private: %{ueberauth_token: payload}}
-         """,
-         %{conn: conn} do
+    test "the handle_callback!/1 function returns a conn with a private payload", %{conn: conn} do
       expect_passing_token_info()
       expect_passing_user_info()
 
@@ -99,9 +118,7 @@ defmodule UeberauthToken.StrategyTest do
     end
   end
 
-  describe """
-  When the request headers have an authorization token
-  """ do
+  describe "When the request headers have an authorization token" do
     setup [
       :ensure_cache_deactivated,
       :setup_valid_token,
@@ -117,11 +134,7 @@ defmodule UeberauthToken.StrategyTest do
       assert Strategy.handle_request!(conn) == conn
     end
 
-    test """
-         the handle_callback!/1 function returns a conn with a private payload
-         in the format %Conn{private: %{ueberauth_token: payload}}
-         """,
-         %{conn: conn} do
+    test "the handle_callback!/1 function returns a conn with a private payload", %{conn: conn} do
       expect_passing_token_info()
       expect_passing_user_info()
 

@@ -59,7 +59,6 @@ defmodule UeberauthToken.Strategy do
   alias Ueberauth.Strategy.Helpers
   alias Ueberauth.Auth
   alias UeberauthToken.Config
-  alias Plug.Conn.TokenParsingError
   alias Plug.Conn
 
   @behaviour Ueberauth.Strategy
@@ -119,11 +118,11 @@ defmodule UeberauthToken.Strategy do
       ) do
     req_headers = Enum.into(req_headers, %{})
 
-    case Map.has_key?(req_headers, "authorization") do
-      true ->
-        do_handle_callback(conn, req_headers["authorization"])
+    case Map.get(req_headers, "authorization") do
+      auth_header when is_binary(auth_header) and auth_header != "" ->
+        do_handle_callback(conn, auth_header)
 
-      false ->
+      _ ->
         error =
           Helpers.error(
             "token",
@@ -135,27 +134,32 @@ defmodule UeberauthToken.Strategy do
   end
 
   defp do_handle_callback(conn, bearer_token) when is_binary(bearer_token) do
-    access_token = extract_token(bearer_token)
+    case extract_token(bearer_token) do
+      {:ok, access_token} ->
+        conn =
+          with %Conn{
+                 private: %{
+                   ueberauth_token: %{
+                     payload: _payload
+                   }
+                 }
+               } = conn <- try_use_potentially_cached_data(conn, access_token) do
+            conn
+          else
+            %Conn{} = conn ->
+              get_payload_and_return_conn(conn, access_token)
 
-    conn =
-      with %Conn{
-             private: %{
-               ueberauth_token: %{
-                 payload: _payload
-               }
-             }
-           } = conn <- try_use_potentially_cached_data(conn, access_token) do
+            {:error, error} ->
+              error = Helpers.error(error.key, error.message)
+              rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
+          end
+
         conn
-      else
-        %Conn{} = conn ->
-          get_payload_and_return_conn(conn, access_token)
 
-        {:error, error} ->
-          error = Helpers.error(error.key, error.message)
-          rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
-      end
-
-    conn
+      {:error, error} ->
+        error = Helpers.error(error.key, error.message)
+        rework_error_struct(Helpers.set_errors!(conn, [error]), provider(conn))
+    end
   end
 
   @doc """
@@ -203,18 +207,15 @@ defmodule UeberauthToken.Strategy do
   # private
 
   def extract_token(access_token) when is_binary(access_token) do
-    try do
-      ["", test] = String.split(access_token, "Bearer ")
-      test
-    rescue
-      exception ->
-        reraise(
-          %TokenParsingError{
-            access_token: access_token,
-            original_exception: exception
-          },
-          System.stacktrace()
-        )
+    case String.split(access_token, "Bearer ", parts: 2) do
+      ["", token] when token != "" ->
+        {:ok, token}
+      ["", ""] ->
+        {:error, %{key: "token", message: "Bearer token is empty"}}
+      [_] ->
+        {:error, %{key: "token", message: "Invalid Bearer token format - missing space after 'Bearer'"}}
+      _ ->
+        {:error, %{key: "token", message: "Invalid Bearer token format"}}
     end
   end
 

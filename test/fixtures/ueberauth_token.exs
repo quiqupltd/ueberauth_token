@@ -116,7 +116,7 @@ defmodule UeberauthToken.Fixtures do
       errors: [
         %Ueberauth.Failure.Error{
           message:
-            "Failed attempt to verify token due to error: %FunctionClauseError{args: nil, arity: 3, clauses: nil, function: :get, kind: nil, module: Keyword}",
+            "Failed attempt to verify token due to error: %FunctionClauseError{module: Keyword, function: :get, arity: 3, kind: nil, args: nil, clauses: nil}",
           message_key: "error"
         }
       ],

@@ -1,7 +1,6 @@
 defmodule UeberauthToken.WithCache.PlugTest do
   use UeberauthToken.TestCase
   alias UeberauthToken.TestPlugRouter
-  alias Plug.Conn.TokenParsingError
   alias Plug.Test
 
   describe """
@@ -92,18 +91,18 @@ defmodule UeberauthToken.WithCache.PlugTest do
     @describetag :token
     @describetag :provider
 
-    test "the plug pipeline raises a TokenParsingError exception", _context do
-      expected_msg = """
-      Error while processing token , only a bearer token is acceptable due\nto original exception: \
-      %MatchError{term: [\"\"]}\n\nExample: \"Bearer 5a236016-07f0-4689-bf74-d7b8559b21d7\"
-      """
-
-      assert_raise TokenParsingError, expected_msg, fn ->
+    test "returns failure struct for missing auth header", _context do
+      conn =
         :get
         |> Test.conn("/api", nil)
         |> Conn.put_req_header("authorization", "")
         |> TestPlugRouter.call([])
-      end
+
+      assert conn.resp_body == "responded"
+      assert :ueberauth_failure in Map.keys(conn.assigns)
+
+      error_message = :erlang.hd(conn.assigns.ueberauth_failure.errors).message
+      assert String.contains?(error_message, "authorization request header is missing")
     end
   end
 
